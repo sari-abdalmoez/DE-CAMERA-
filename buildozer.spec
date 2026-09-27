@@ -1,55 +1,40 @@
-name: Build DE CAMERA APK
+[app]
+# Application title
+title = DE CAMERA
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - "**"
+# Package name
+package.name = decamera
+package.domain = org.decamera
 
-permissions:
-  contents: read
+# Source code location
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas,json
 
-jobs:
-  build:
-    runs-on: ubuntu-22.04
+# Version
+version = 0.1.0
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+# Requirements
+requirements = python3,kivy,requests
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+# Permissions
+permissions = INTERNET,CAMERA,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
+# Orientation
+orientation = portrait
 
-      - name: Install system packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            git zip unzip \
-            autoconf automake libtool pkg-config \
-            zlib1g-dev libncurses5-dev \
-            libncursesw5-dev libtinfo5 \
-            cmake libffi-dev libssl-dev
+# Fullscreen
+fullscreen = 0
 
-      - name: Install Buildozer
-        run: |
-          python -m pip install --upgrade pip
-          pip install buildozer
+# Android specific settings
+android.permissions = INTERNET,CAMERA,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
+android.api = 31
+android.minapi = 21
+android.ndk = 25b
+android.accept_sdk_license = True
 
-      - name: Build APK
-        run: |
-          buildozer -v android debug
+[buildozer]
+# Log level
+log_level = 2
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: DE-CAMERA-APK
-          path: bin/*.apk
-          if-no-files-found: error
+# Warnings
+warn_on_root = 1
