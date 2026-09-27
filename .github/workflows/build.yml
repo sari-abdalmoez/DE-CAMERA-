@@ -6,9 +6,6 @@ on:
     branches:
       - "**"
 
-permissions:
-  contents: read
-
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -28,20 +25,18 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Install system packages
+      - name: Install system deps
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            git zip unzip \
-            autoconf automake libtool pkg-config \
-            zlib1g-dev libncurses5-dev \
-            libncursesw5-dev libtinfo5 \
-            cmake libffi-dev libssl-dev
+            git zip unzip build-essential \
+            libffi-dev libssl-dev \
+            python3-dev
 
       - name: Install Buildozer
         run: |
           python -m pip install --upgrade pip
-          pip install buildozer
+          pip install --upgrade buildozer
 
       - name: Build APK
         run: |
