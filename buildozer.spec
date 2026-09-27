@@ -1,23 +1,55 @@
-[app]
-title = DE CAMERA
-package.name = decamera
-package.domain = com.sari
-source.dir = .
-source.include_exts = py,png,jpg,jpeg,kv,atlas,json
-version = 1.0.0
+name: Build DE CAMERA APK
 
-requirements = python3,kivy==2.3.1,pillow==10.4.0,numpy==1.26.4,pyjnius
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "**"
 
-orientation = portrait
-fullscreen = 0
+permissions:
+  contents: read
 
-android.api = 35
-android.minapi = 24
-android.archs = arm64-v8a
-android.accept_sdk_license = True
+jobs:
+  build:
+    runs-on: ubuntu-22.04
 
-android.permissions = CAMERA,RECORD_AUDIO,READ_MEDIA_IMAGES,WRITE_EXTERNAL_STORAGE
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-[buildozer]
-log_level = 2
-warn_on_root = 1
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip \
+            autoconf automake libtool pkg-config \
+            zlib1g-dev libncurses5-dev \
+            libncursesw5-dev libtinfo5 \
+            cmake libffi-dev libssl-dev
+
+      - name: Install Buildozer
+        run: |
+          python -m pip install --upgrade pip
+          pip install buildozer
+
+      - name: Build APK
+        run: |
+          buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DE-CAMERA-APK
+          path: bin/*.apk
+          if-no-files-found: error
